@@ -1,12 +1,7 @@
 # Password to use for basic authentication
-password:
+username: qa
+password: qa
 
 # Path to resque config file
 resque:
-  config_path: /u/apps/myapp/current/config/resque.yml
-  environment: development # Or leave empty if no key is used
-  namespace: # optional
-
-# Resque-scheduler config
-scheduler:
-  config_path: /u/apps/myapp/current/config/scheduler.yml
+  app_path: /opt/www/stsite/current

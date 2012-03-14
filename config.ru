@@ -2,7 +2,6 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'resque/server'
-require 'resque_scheduler'
 require 'json'
 
 require 'yaml'
@@ -10,32 +9,14 @@ require 'yaml'
 # Our config
 config = YAML.load_file( File.expand_path('../resque-web.yml', __FILE__) )
 
-# Load resque config
-redis_config = YAML.load_file( config['resque']['config_path'] )
-redis_config = redis_config[ config['resque']['environment'] ] if config['resque']['environment']
-
 # Setup resque
-Resque.redis = redis_config
-Resque.redis.namespace = config['resque']['namespace'] if config['resque']['namespace']
+load ::File.expand_path("#{config['resque']['app_path']}/config/initializers/resque.rb")
 
-if config['scheduler']
-  # Load scheduler config
-  schedule_config = YAML.load_file( config['scheduler']['config_path'] )
-  schedule_config = redis_config[ config['scheduler']['env_key'] ] if config['scheduler']['env_key']
-
-  # Setup the scheduler
-  Resque.schedule = schedule_config
-end
-
-# If a password is provided, setup basic auth
-if config['password']
-  Resque::Server.use Rack::Auth::Basic do |username, password|
-    password == config['password']
-  end
+# Setup basic auth
+Resque::Server.use Rack::Auth::Basic do |username, password|
+  username == config['username'] && password == config['password']
 end
 
 use Rack::ShowExceptions
-
-run Rack::URLMap.new \
-  "/resque" => Resque::Server.new
+run Resque::Server.new
 
