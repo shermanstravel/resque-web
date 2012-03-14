@@ -2,8 +2,6 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'resque/server'
-require 'json'
-
 require 'yaml'
 
 # Our config
